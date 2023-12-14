@@ -72,7 +72,7 @@ export class TransactionService {
               status: "PENDING"
             };
 
-            // Утасны дугаарын гүйлгээний утгаас явгаж авах
+            // Утасны дугаарын гүйлгээний утгаас ялгаж авах
             const phoneNumber = phoneNumberRecognition(tran.description);
             if (!phoneNumber) {
               tranData.status = "FAILED";
@@ -100,6 +100,7 @@ export class TransactionService {
             const transaction = new TransactionModel(tranData);
             const newTransaction = (await transaction.save()).toJSON();
 
+            // Generator queue-рүү шиднэ
             generatorQueueChannel.sendToQueue(
               "barimt",
               Buffer.from(

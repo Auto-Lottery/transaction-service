@@ -13,7 +13,13 @@ export class AuthApiService {
       });
       return res.data;
     } catch (err) {
-        console.log("AUTH API CALL ERR::: ", err);
+      if (err instanceof Error) {
+        return {
+          code: 500,
+          message: err.message
+        };
+      }
+      console.log("AUTH API REGISTER CALL ERR::: ", err);
       return {
         code: 500,
         message: "Бүртгэл амжилтгүй"
