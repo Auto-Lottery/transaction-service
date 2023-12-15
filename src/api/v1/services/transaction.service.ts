@@ -39,8 +39,6 @@ export class TransactionService {
       async (msg) => {
         if (msg?.content) {
           const tran: Transaction = JSON.parse(msg.content.toString());
-
-          console.log(tran);
           //Transaction dotroos orlogo zarlaga esehiig ylgah dutuu
 
           // Гүйлгээ бүртгэлтэй эсэхийг шалгана
