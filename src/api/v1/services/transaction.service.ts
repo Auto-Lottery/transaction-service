@@ -72,8 +72,19 @@ export class TransactionService {
               status: "PENDING"
             };
 
-            // Утасны дугаарын гүйлгээний утгаас ялгаж авах
+            if (tran.amount < 20000) {
+              tranData.description = "Мөнгөн дүн хүрэлцэхгүй байна.";
+              tranData.status = "FAILED";
+
+              const transaction = new TransactionModel(tranData);
+              await transaction.save();
+              queueChannel.ack(msg);
+              return;
+            }
+
+            // Утасны дугаарыг гүйлгээний утгаас ялгаж авах
             const phoneNumber = phoneNumberRecognition(tran.description);
+
             if (!phoneNumber) {
               tranData.status = "FAILED";
               tranData.description = "Утасны дугаарын формат буруу";
@@ -129,21 +140,21 @@ export class TransactionService {
   }
 
   async transactionUpdateQueue() {
-    const queueChannel =
-      await this.rabbitMqManager.createChannel("bank_transaction");
-
-    queueChannel.assertExchange("bank_transaction", "direct", {
-      durable: true
-    });
-
+    const exchangeName = "bank_transaction";
     const queueName = "transaction";
     const routingKey = "complete";
+
+    const queueChannel = await this.rabbitMqManager.createChannel(exchangeName);
+
+    queueChannel.assertExchange(exchangeName, "direct", {
+      durable: true
+    });
 
     queueChannel.assertQueue(queueName, {
       durable: true
     });
 
-    queueChannel.bindQueue(queueName, "bank_transaction", routingKey);
+    queueChannel.bindQueue(queueName, exchangeName, routingKey);
 
     queueChannel.prefetch(1);
 
@@ -152,15 +163,20 @@ export class TransactionService {
       async (msg) => {
         if (msg?.content) {
           const transaction = JSON.parse(msg.content?.toString());
-          TransactionModel.updateOne(
+          const tran = await TransactionModel.updateOne(
             {
-              _id: transaction.id
+              _id: transaction.transactionId
             },
             {
-              status: transaction.status,
-              description: transaction.description
+              $set: {
+                status: transaction.status,
+                description: transaction.description
+              }
             }
-          );
+          ).exec();
+          if (tran.matchedCount === 1 && tran.modifiedCount === 1) {
+            queueChannel.ack(msg);
+          }
         }
       },
       {

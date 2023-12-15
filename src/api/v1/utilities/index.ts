@@ -7,11 +7,15 @@ function getRandomInt(min: number, max: number): number {
 }
 
 export const phoneNumberRecognition = (description: string) => {
-  const pattern: RegExp = /\d{8}/;
+  const pattern: RegExp = /\d{8,}/;
   const match = pattern.exec(description);
 
   if (match) {
-    return match[0];
+    const length8Elements = match.filter((element) => element.length === 8);
+    if (length8Elements.length > 0) {
+      return match[0];
+    }
+    return null;
   } else {
     return null;
   }
@@ -19,7 +23,7 @@ export const phoneNumberRecognition = (description: string) => {
 
 export const generateFakeTransaction = (): Transaction => {
   const amount = [20000, 50000, 100000];
-  const users = ["85266716", "99646141"];
+  const users = ["85266716", "99646141", "12313321", "456465", "995599554"];
   const selectAmountIndex = getRandomInt(0, amount.length);
   const selectUserIndex = getRandomInt(0, users.length);
 

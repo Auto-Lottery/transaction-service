@@ -34,7 +34,7 @@ class VaultManager {
 
   public async write(
     path: string,
-    data: Record<string, string>
+    data: Record<string, Record<string, string>>
   ): Promise<Record<string, string>> {
     // path example -> secret/data/{key} || kv/data/{key}
     try {
