@@ -127,4 +127,45 @@ export class TransactionService {
       }
     );
   }
+
+  async transactionUpdateQueue() {
+    const queueChannel =
+      await this.rabbitMqManager.createChannel("bank_transaction");
+
+    queueChannel.assertExchange("bank_transaction", "direct", {
+      durable: true
+    });
+
+    const queueName = "transaction";
+    const routingKey = "complete";
+
+    queueChannel.assertQueue(queueName, {
+      durable: true
+    });
+
+    queueChannel.bindQueue(queueName, "bank_transaction", routingKey);
+
+    queueChannel.prefetch(1);
+
+    queueChannel.consume(
+      queueName,
+      async (msg) => {
+        if (msg?.content) {
+          const transaction = JSON.parse(msg.content?.toString());
+          TransactionModel.updateOne(
+            {
+              _id: transaction.id
+            },
+            {
+              status: transaction.status,
+              description: transaction.description
+            }
+          );
+        }
+      },
+      {
+        noAck: false
+      }
+    );
+  }
 }

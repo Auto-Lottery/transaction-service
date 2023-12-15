@@ -1,8 +1,7 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model } from "mongoose";
 import { Bank } from "../types/enums";
-import TransactionArchiveModel from "./transaction-archive.model";
 
-const TransactionSchema = new Schema(
+const TransactionArchiveSchema = new Schema(
   {
     bankTransactionId: {
       type: String,
@@ -53,6 +52,10 @@ const TransactionSchema = new Schema(
       type: Date,
       default: Date.now
     },
+    baseTransactionId: {
+      type: String,
+      required: true
+    },
     version: {
       type: Number,
       default: 0
@@ -63,33 +66,9 @@ const TransactionSchema = new Schema(
   }
 );
 
-TransactionSchema.pre("updateOne", async function (next) {
-  try {
-    const existingDocument = await this.model.findOne(this.getQuery());
+const TransactionArchiveModel = model(
+  "transactionsarchive",
+  TransactionArchiveSchema
+);
 
-    if (existingDocument) {
-      const archiveVersion = {
-        ...existingDocument.toObject(),
-        baseTransactionId: existingDocument._id
-      };
-      archiveVersion._id = new Types.ObjectId();
-      await TransactionArchiveModel.create(archiveVersion);
-
-      const updateData = this.getUpdate();
-      if (updateData) {
-        this.setUpdate({
-          ...updateData,
-          $inc: { version: 1 }
-        });
-      }
-    }
-    next();
-  } catch (err) {
-    console.log("UPDATE ONE PRE ERROR::: ", err);
-    throw new Error("INTERNAL SERVER ERROR");
-  }
-});
-
-const TransactionModel = model("transactions", TransactionSchema);
-
-export default TransactionModel;
+export default TransactionArchiveModel;
