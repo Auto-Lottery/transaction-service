@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const debugLog = (...args: any[]) => {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV !== "production") {
     console.log("[DEBUG]: ", ...args);
   }
 };
