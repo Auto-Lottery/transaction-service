@@ -2,6 +2,7 @@ import axios from "axios";
 import { AUTH_SERVICE_URL } from "../config";
 import { CustomResponse } from "../types/custom-response";
 import { User } from "../types/user";
+import { errorLog } from "../utilities/log";
 
 export class AuthApiService {
   constructor() {}
@@ -19,7 +20,7 @@ export class AuthApiService {
           message: err.message
         };
       }
-      console.log("AUTH API REGISTER CALL ERR::: ", err);
+      errorLog("AUTH API REGISTER CALL ERR::: ", err);
       return {
         code: 500,
         message: "Бүртгэл амжилтгүй"

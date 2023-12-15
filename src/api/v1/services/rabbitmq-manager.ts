@@ -1,4 +1,5 @@
 import * as amqp from "amqplib";
+import { infoLog } from "../utilities/log";
 
 class RabbitMQManager {
   private static instance: RabbitMQManager;
@@ -24,7 +25,7 @@ class RabbitMQManager {
         username: config.RABBIT_MQ_USER,
         password: config.RABBIT_MQ_PASSWORD
       });
-      console.log("RabbitMQ connected.");
+      infoLog("RabbitMQ connected.");
     } catch (error) {
       console.error("RABBIT INIT ERR::: ", error);
       throw new Error("INTERNAL SERVER ERROR");
