@@ -2,6 +2,7 @@ import TransactionModel from "../models/transaction.model";
 import { Bank } from "../types/enums";
 import { Transaction } from "../types/transaction";
 import { phoneNumberRecognition } from "../utilities";
+import { errorLog, infoLog } from "../utilities/log";
 import { AuthApiService } from "./auth-api.service";
 import RabbitMQManager from "./rabbitmq-manager";
 
@@ -48,11 +49,7 @@ export class TransactionService {
 
           // Гүйлгээний мэдээлэл давхардсан
           if (oldTran) {
-            console.log(
-              "DUPLICATE TRANSACTION::: ",
-              tran.record,
-              tran.tranDate
-            );
+            infoLog("DUPLICATE TRANSACTION::: ", tran.record, tran.tranDate);
             queueChannel.ack(msg);
             return;
           }
@@ -127,7 +124,7 @@ export class TransactionService {
             );
             queueChannel.ack(msg);
           } catch (err) {
-            console.log(`SAVE DEPOSIT TRANSACTION ERR::: `, err);
+            errorLog(`SAVE DEPOSIT TRANSACTION ERR::: `, err);
           }
         }
       },

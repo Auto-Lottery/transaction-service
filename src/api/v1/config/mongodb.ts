@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import VaultManager from "../services/vault-manager";
+import { errorLog, infoLog } from "../utilities/log";
 
 export const connectDb = async () => {
   try {
@@ -13,11 +14,11 @@ export const connectDb = async () => {
       }
     });
   } catch (err) {
-    console.log(err);
+    errorLog(err);
     throw new Error("Өгөгдлийн сантай холбогдоход алдаа гарлаа");
   }
 };
 
 mongoose.connection.on("connected", async () => {
-  console.log("MongoDB connected.");
+  infoLog("MongoDB connected.");
 });
