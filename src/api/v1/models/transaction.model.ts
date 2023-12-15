@@ -1,6 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import { Bank } from "../types/enums";
 import TransactionArchiveModel from "./transaction-archive.model";
+import { errorLog } from "../utilities/log";
 
 const TransactionSchema = new Schema(
   {
@@ -85,7 +86,7 @@ TransactionSchema.pre("updateOne", async function (next) {
     }
     next();
   } catch (err) {
-    console.log("UPDATE ONE PRE ERROR::: ", err);
+    errorLog("UPDATE ONE PRE ::: ", err);
     throw new Error("INTERNAL SERVER ERROR");
   }
 });
