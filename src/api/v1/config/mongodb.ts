@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 import VaultManager from "../services/vault-manager";
 import { errorLog, infoLog } from "../utilities/log";
+import { isDev } from ".";
 
 export const connectDb = async () => {
   try {
     const vaultManager = VaultManager.getInstance();
-    const config = await vaultManager.read("kv/data/mongodb");
+    const configKey = isDev ? "kv/data/mongodbDev" : "kv/data/mongodb";
+    const config = await vaultManager.read(configKey);
     await mongoose.connect(config.MONGO_URL, {
       serverApi: {
         version: "1",

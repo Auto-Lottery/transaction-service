@@ -23,7 +23,7 @@ export const phoneNumberRecognition = (description: string) => {
 
 export const generateFakeTransaction = (): Transaction => {
   const amount = [20000, 50000, 100000];
-  const users = ["85266716", "99646141", "12313321", "456465", "995599554"];
+  const users = ["85266716", "99646141", "12313321", "456465", "99559955", "85959595", "99999999", "98252525"];
   const selectAmountIndex = getRandomInt(0, amount.length);
   const selectUserIndex = getRandomInt(0, users.length);
 
