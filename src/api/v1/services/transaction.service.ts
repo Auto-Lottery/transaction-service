@@ -171,20 +171,30 @@ export class TransactionService {
       queueName,
       async (msg) => {
         if (msg?.content) {
-          const transaction = JSON.parse(msg.content?.toString());
-          const tran = await TransactionModel.updateOne(
-            {
-              _id: transaction.transactionId
-            },
-            {
-              $set: {
-                status: transaction.status,
-                description: transaction.description
-              }
-            }
-          ).exec();
-          if (tran.matchedCount === 1 && tran.modifiedCount === 1) {
+          const dataJsonString = msg.content.toString();
+          if (!dataJsonString) {
+            errorLog("Queue empty message");
             queueChannel.ack(msg);
+            return;
+          }
+          try {
+            const transaction = JSON.parse(dataJsonString);
+            const tran = await TransactionModel.updateOne(
+              {
+                _id: transaction.transactionId
+              },
+              {
+                $set: {
+                  status: transaction.status,
+                  description: transaction.description
+                }
+              }
+            );
+            if (tran.matchedCount === 1 && tran.modifiedCount === 1) {
+              queueChannel.ack(msg);
+            }
+          } catch (err) {
+            errorLog("Transaction update queue error::: ", err);
           }
         }
       },
