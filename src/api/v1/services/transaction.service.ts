@@ -1,3 +1,4 @@
+import ErroredTransactionModel from "../models/errored-transaction.mode";
 import TransactionModel from "../models/transaction.model";
 import { Bank } from "../types/enums";
 import { Transaction } from "../types/transaction";
@@ -39,22 +40,29 @@ export class TransactionService {
       queueName,
       async (msg) => {
         if (msg?.content) {
-          const tran: Transaction = JSON.parse(msg.content.toString());
-          //Transaction dotroos orlogo zarlaga esehiig ylgah dutuu
-
-          // Гүйлгээ бүртгэлтэй эсэхийг шалгана
-          const oldTran = await TransactionModel.findOne({
-            bankTransactionId: tran.record
-          });
-
-          // Гүйлгээний мэдээлэл давхардсан
-          if (oldTran) {
-            infoLog("DUPLICATE TRANSACTION::: ", tran.record, tran.tranDate);
+          const dataJsonString = msg.content.toString();
+          if (!dataJsonString) {
+            errorLog("Queue empty message");
             queueChannel.ack(msg);
             return;
           }
 
           try {
+            const tran: Transaction = JSON.parse(dataJsonString);
+            //Transaction dotroos orlogo zarlaga esehiig ylgah dutuu
+
+            // Гүйлгээ бүртгэлтэй эсэхийг шалгана
+            const oldTran = await TransactionModel.findOne({
+              bankTransactionId: tran.record
+            });
+
+            // Гүйлгээний мэдээлэл давхардсан
+            if (oldTran) {
+              infoLog("Duplicate transaction: ", tran.record, tran.tranDate);
+              queueChannel.ack(msg);
+              return;
+            }
+
             const tranData = {
               bankTransactionId: tran.record,
               amount: tran.amount,
@@ -123,8 +131,14 @@ export class TransactionService {
               }
             );
             queueChannel.ack(msg);
+            return;
           } catch (err) {
+            ErroredTransactionModel.create({
+              transactionData: dataJsonString
+            });
             errorLog(`SAVE DEPOSIT TRANSACTION ERR::: `, err);
+            queueChannel.ack(msg);
+            return;
           }
         }
       },

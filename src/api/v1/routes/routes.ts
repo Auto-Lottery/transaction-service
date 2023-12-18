@@ -1,5 +1,4 @@
 import express from "express";
-import testRoutes from "./test.routes";
 const V1Routes = express.Router();
 
 V1Routes.get("/", (req, res) => {
@@ -7,7 +6,5 @@ V1Routes.get("/", (req, res) => {
     data: "v1"
   });
 });
-
-V1Routes.use("/test", testRoutes);
 
 export default V1Routes;
