@@ -8,7 +8,8 @@ const TransactionSchema = new Schema(
     bankTransactionId: {
       type: String,
       required: true,
-      lowerCase: true
+      lowerCase: true,
+      index: true
     },
     bank: {
       type: String,
@@ -25,7 +26,8 @@ const TransactionSchema = new Schema(
     },
     amount: {
       type: Number,
-      required: true
+      required: true,
+      index: true
     },
     fromAccountNumber: {
       type: String,
@@ -48,15 +50,18 @@ const TransactionSchema = new Schema(
     },
     transactionDate: {
       type: Date,
-      required: true
+      required: true,
+      index: -1
     },
     createdDate: {
-      type: Date,
-      default: Date.now
+      type: Number,
+      default: Date.now,
+      index: -1
     },
     version: {
       type: Number,
-      default: 0
+      default: 0,
+      index: -1
     }
   },
   {

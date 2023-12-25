@@ -1,4 +1,4 @@
-import ErroredTransactionModel from "../models/errored-transaction.mode";
+import ErroredTransactionModel from "../models/errored-transaction.model";
 import TransactionModel from "../models/transaction.model";
 import { Bank } from "../types/enums";
 import { Transaction } from "../types/transaction";
@@ -190,6 +190,13 @@ export class TransactionService {
                 }
               }
             );
+            if (tran.matchedCount === 0) {
+              ErroredTransactionModel.create({
+                transactionData: JSON.stringify(transaction),
+                description: "Transaction not found!!!"
+              });
+              queueChannel.ack(msg);
+            }
             if (tran.matchedCount === 1 && tran.modifiedCount === 1) {
               queueChannel.ack(msg);
             }

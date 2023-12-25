@@ -4,6 +4,9 @@ const ErroredTransactionSchema = new Schema(
     transactionData: {
       type: String,
       required: true
+    },
+    description: {
+      type: String
     }
   },
   {
