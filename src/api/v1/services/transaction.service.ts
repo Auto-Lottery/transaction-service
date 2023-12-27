@@ -186,7 +186,8 @@ export class TransactionService {
               {
                 $set: {
                   status: transaction.status,
-                  description: transaction.description
+                  description: transaction.description,
+                  phoneNumber: transaction?.phoneNumber
                 }
               }
             );

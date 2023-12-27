@@ -31,6 +31,12 @@ const TransactionArchiveSchema = new Schema(
       type: String,
       required: true
     },
+    phoneNumber: {
+      type: String
+    },
+    updatedUserId: {
+      type: String
+    },
     tranDescription: {
       type: String
     },

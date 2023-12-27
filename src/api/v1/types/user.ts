@@ -1,8 +1,3 @@
-export type LoginData = {
-  phoneNumber: string;
-  otpCode: string;
-};
-
 export type User = {
   phoneNumber: string;
   operator: string;
@@ -12,3 +7,15 @@ export type User = {
 export type UserWithToken = {
   accessToken: string;
 } & User;
+
+export type AdminUser = {
+  phoneNumber: string;
+  operator: string;
+  _id: string;
+  roles: string[];
+};
+
+export type AdminUserWithToken = {
+  token: string;
+  exp?: number;
+} & AdminUser;

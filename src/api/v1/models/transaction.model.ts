@@ -48,10 +48,16 @@ const TransactionSchema = new Schema(
     status: {
       type: String
     },
+    phoneNumber: {
+      type: String
+    },
     transactionDate: {
       type: Date,
       required: true,
       index: -1
+    },
+    updatedUserId: {
+      type: String
     },
     createdDate: {
       type: Number,
