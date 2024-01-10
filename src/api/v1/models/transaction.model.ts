@@ -48,6 +48,11 @@ const TransactionSchema = new Schema(
     status: {
       type: String
     },
+    isRetry: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
     phoneNumber: {
       type: String
     },

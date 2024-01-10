@@ -46,6 +46,11 @@ const TransactionArchiveSchema = new Schema(
         values: ["DEPOSIT", "WITHDRAW"]
       }
     },
+    isRetry: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
     description: {
       type: String
     },

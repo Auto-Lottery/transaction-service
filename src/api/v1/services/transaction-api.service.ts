@@ -2,9 +2,13 @@ import TransactionModel from "../models/transaction.model";
 import { AdminUser } from "../types/user";
 import { errorLog } from "../utilities/log";
 import { Filter, generateQuery } from "../utilities/mongo";
+import { TransactionService } from "./transaction.service";
 
 export class TransactionApiService {
-  constructor() {}
+  private transactionService;
+  constructor() {
+    this.transactionService = new TransactionService();
+  }
 
   async getAllTransactions(filter: Filter) {
     const { field, order } = filter?.sort || {
@@ -76,7 +80,9 @@ export class TransactionApiService {
       {
         $set: {
           status: updateData.status,
+          tranDescription: updateData.tranDescription,
           description: updateData.description,
+          isRetry: updateData.isRetry,
           updatedUserId: user._id
         }
       }
@@ -86,6 +92,9 @@ export class TransactionApiService {
         code: 500,
         message: "Гүйлгээний мэдээлэл олдсонгүй."
       };
+    }
+    if (updateData.isRetry) {
+      this.transactionService.retryTransactionsSendToQueue(updateData.id);
     }
     return {
       code: 200,

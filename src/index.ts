@@ -27,4 +27,5 @@ app.listen(PORT, async () => {
   const transactionService = new TransactionService();
   transactionService.khanbankQueue();
   transactionService.transactionUpdateQueue();
+  transactionService.retryTransactions();
 });

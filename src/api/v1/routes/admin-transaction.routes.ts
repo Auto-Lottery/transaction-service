@@ -47,15 +47,15 @@ adminTransactionRoutes.get("/getUserTransactions", async (req, res) => {
   return res.status(401).json({ message: "Unauthorized" });
 });
 
-adminTransactionRoutes.post("/updateTransaction", (req, res) => {
+adminTransactionRoutes.post("/updateTransaction", async (req, res) => {
   if (req?.user) {
     try {
       const transactionApiService = new TransactionApiService();
-      const result = transactionApiService.manualUpdateTransaction(
+      const result = await transactionApiService.manualUpdateTransaction(
         req.user as AdminUser,
         req.body
       );
-      res.send(result);
+      return res.send(result);
     } catch (err) {
       errorLog("MANUAL UPDATE TRANSACTION LIST::: ", err);
       return res.status(500).json(err);
