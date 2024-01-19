@@ -1,7 +1,9 @@
+import TransactionRequestModel from "../models/transaction-request";
 import TransactionModel from "../models/transaction.model";
 import { AdminUser } from "../types/user";
 import { errorLog } from "../utilities/log";
 import { Filter, generateQuery } from "../utilities/mongo";
+import RabbitMQManager from "./rabbitmq-manager";
 import { TransactionService } from "./transaction.service";
 
 export class TransactionApiService {
@@ -100,5 +102,57 @@ export class TransactionApiService {
       code: 200,
       data: true
     };
+  }
+
+  async manualCreateTransaction(
+    data: { phoneNumber: string; lotteryCount: number },
+    user: AdminUser
+  ) {
+    const newRequest = await TransactionRequestModel.create({
+      count: data.lotteryCount,
+      phoneNumber: data.phoneNumber,
+      createdUser: user._id,
+      description: "MANUAL"
+    });
+    try {
+      const rabbitMQManager = RabbitMQManager.getInstance();
+      const rabbitMqChannel =
+        await rabbitMQManager.createChannel("bank_transaction");
+
+      if (rabbitMqChannel) {
+        rabbitMqChannel.sendToQueue(
+          "khanbank",
+          Buffer.from(
+            JSON.stringify({
+              record: newRequest._id.toString(),
+              tranDate: newRequest.createdDate,
+              amount: newRequest.count * 10000,
+              description: newRequest.phoneNumber,
+              relatedAccount: "MANUAL"
+            })
+          ),
+          {
+            persistent: true
+          }
+        );
+      }
+
+      return {
+        code: 200,
+        data: {
+          requestId: newRequest._id.toString(),
+          status: "DONE"
+        }
+      };
+    } catch (err) {
+      errorLog("MANUAL TRAN ERROR::: ", err);
+      return {
+        code: 200,
+        data: {
+          smsId: newRequest._id.toString(),
+          status: "ERROR"
+        }
+      };
+    }
   }
 }

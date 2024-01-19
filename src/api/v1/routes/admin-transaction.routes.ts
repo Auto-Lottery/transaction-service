@@ -63,4 +63,21 @@ adminTransactionRoutes.post("/updateTransaction", async (req, res) => {
   }
   return res.status(401).json({ message: "Unauthorized" });
 });
+
+adminTransactionRoutes.post("/manualCreateTransaction", async (req, res) => {
+  if (req?.user) {
+    try {
+      const transactionApiService = new TransactionApiService();
+      const result = await transactionApiService.manualCreateTransaction(
+        req.body,
+        req.user as AdminUser
+      );
+      return res.send(result);
+    } catch (err) {
+      errorLog("MANUAL CREATE TRANSACTION::: ", err);
+      return res.status(500).json(err);
+    }
+  }
+  return res.status(401).json({ message: "Unauthorized" });
+});
 export default adminTransactionRoutes;
