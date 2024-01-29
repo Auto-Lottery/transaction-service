@@ -75,7 +75,7 @@ export class TransactionService {
               status: "PENDING"
             };
 
-            if (tran.amount < 50000 && tran.relatedAccount !== "MANUAL") {
+            if (tran.amount < 10000) {
               tranData.description = "Мөнгөн дүн хүрэлцэхгүй байна.";
               tranData.status = "FAILED";
 
