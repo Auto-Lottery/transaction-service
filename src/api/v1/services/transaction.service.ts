@@ -295,7 +295,7 @@ export class TransactionService {
             transaction.isRetry = false;
             transaction.description = "Сугалаа үүсгэж байна";
             transaction.status = "PENDING";
-            if (transaction.amount < 50000) {
+            if (transaction.amount < 10000) {
               transaction.description = "Мөнгөн дүн хүрэлцэхгүй байна.";
               transaction.status = "FAILED";
               await this.updateTransaction(transaction.toJSON());
